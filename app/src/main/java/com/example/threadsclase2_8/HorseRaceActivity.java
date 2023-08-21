@@ -2,6 +2,7 @@ package com.example.threadsclase2_8;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -26,7 +27,7 @@ public class HorseRaceActivity extends AppCompatActivity {
         txtWinner = findViewById(R.id.txtWinner);
         for (int i = 0; i < NUM_CABALLOS; i++) {
             View horseView = getLayoutInflater().inflate(R.layout.horse_layout, layout, false);
-            horses[i] = new Horse(horseView, i, txtWinner);
+            horses[i] = new Horse(horseView, i, txtWinner, this);
             layout.addView(horseView);
         }
 
@@ -54,5 +55,19 @@ public class HorseRaceActivity extends AppCompatActivity {
     private void stopRace(int selectedHorseIndex) {
         horses[selectedHorseIndex].stop();
     }
-
+    @SuppressLint("ResourceAsColor")
+    public void stopAll(){
+        int minDistance = 1001;
+        Horse losingHorse = null;
+        for (Horse hors : horses) {
+            hors.stop();
+            if (hors.distanceTraveled < minDistance) {
+                minDistance = hors.distanceTraveled;
+                losingHorse = hors;
+            }
+        }
+        if (losingHorse != null) {
+            System.out.println("el caballo perdedor es " + losingHorse.txtNombre.getText().toString());
+        }
+    }
 }

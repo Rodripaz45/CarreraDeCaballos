@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.threadsclase2_8.HorseRaceActivity;
 import com.example.threadsclase2_8.R;
 
 
@@ -31,6 +32,9 @@ public class Horse implements Runnable {
             R.drawable.image9,
             R.drawable.image10
     };
+    private HorseRaceActivity horseRaceActivity;
+    public int distanceTraveled = 0;
+
     public static final String[] HORSE_NAME_RESOURCES = {
             "Ronaldinho",
             "Jugador",
@@ -45,11 +49,12 @@ public class Horse implements Runnable {
     };
 
     @SuppressLint("CutPasteId")
-    public Horse(View view, int horseImageIndex, TextView txtWinner) {
+    public Horse(View view, int horseImageIndex, TextView txtWinner, HorseRaceActivity horseRaceActivity) {
         horseImage = view.findViewById(R.id.horseImage);
         horsesLayout = view.findViewById(R.id.racetrackLayout);
         progressTextView = view.findViewById(R.id.progressTextView);
         txtNombre = view.findViewById(R.id.txtNombre);
+        this.horseRaceActivity = horseRaceActivity;
         this.txtWinner = txtWinner;
 
         if (horseImageIndex >= 0 && horseImageIndex < HORSE_IMAGE_RESOURCES.length) {
@@ -71,7 +76,8 @@ public class Horse implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            distance += (int) (Math.random() * 10); // Simula la distancia que avanza el caballo
+            distance += (int) (Math.random() * 10);
+            distanceTraveled = distance;
             int finalDistance = Math.min(distance, MAX_DISTANCE);
             float progress = (float) finalDistance / MAX_DISTANCE;
 
@@ -90,11 +96,15 @@ public class Horse implements Runnable {
             });
 
         }
-        if(!singletonInstance.isWinner()){
-            horsesLayout.setBackgroundColor(R.color.green);
-            txtWinner.setText("El ganador es: "+ txtNombre.getText().toString());
+        if (!singletonInstance.isWinner()) {
+            horseRaceActivity.runOnUiThread(() -> {
+                horsesLayout.setBackgroundColor(R.color.green);
+                txtWinner.setText("El ganador es: " + txtNombre.getText().toString());
+            });
             singletonInstance.setWinner(true);
+            horseRaceActivity.stopAll();
         }
+
     }
 
     public void stop(){
